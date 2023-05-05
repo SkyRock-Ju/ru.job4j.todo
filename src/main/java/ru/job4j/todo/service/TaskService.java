@@ -24,12 +24,19 @@ public class TaskService {
     public List<Task> findAll() {
         return taskStore.findAll();
     }
+
     public Task save(Task task) {
         return taskStore.save(task);
     }
+
     public boolean update(Task task) {
         return taskStore.update(task);
     }
+
+    public boolean completeTask(int id) {
+        return completeTask(id);
+    }
+
     public boolean delete(int id) {
         return taskStore.delete(id);
     }

@@ -84,13 +84,30 @@ public class TaskStore implements TaskRepository {
         try {
             session.beginTransaction();
             session.createQuery(
-                            "UPDATE Task SET description = :description, created = :created, done= :isDone" +
-                                    " WHERE id = :id",
+                            "UPDATE Task SET description = :description, done= :isDone WHERE id = :id",
                             Task.class)
                     .setParameter("description", task.getDescription())
-                    .setParameter("created", task.getCreated())
                     .setParameter("isDone", task.isDone())
                     .setParameter("id", task.getId())
+                    .executeUpdate();
+            session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            session.getTransaction().rollback();
+        } finally {
+            sessionFactory.close();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean completeTask(int id) {
+        var session = sessionFactory.openSession();
+        try {
+            session.beginTransaction();
+            session.createQuery(
+                            "UPDATE Task SET done=true WHERE id = :id", Task.class)
+                    .setParameter("id", id)
                     .executeUpdate();
             session.getTransaction().commit();
             return true;
