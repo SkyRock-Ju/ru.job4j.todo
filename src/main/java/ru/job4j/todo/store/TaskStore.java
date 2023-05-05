@@ -48,6 +48,21 @@ public class TaskStore implements TaskRepository {
     }
 
     @Override
+    public List<Task> findDoneTasks() {
+        var session = sessionFactory.openSession();
+        try {
+            var doneTasks = session.createQuery("FROM Task WHERE done=true", Task.class).list();
+            session.getTransaction().commit();
+            return doneTasks;
+        } catch (Exception e) {
+            session.getTransaction().rollback();
+        } finally {
+            sessionFactory.close();
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
     public Task save(Task task) {
         var session = sessionFactory.openSession();
         try {
