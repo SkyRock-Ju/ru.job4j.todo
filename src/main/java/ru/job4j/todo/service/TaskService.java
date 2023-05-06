@@ -25,6 +25,10 @@ public class TaskService {
         return taskStore.findAll();
     }
 
+    public List<Task> findNewTasks() {
+        return taskStore.findNewTasks();
+    }
+
     public Task save(Task task) {
         return taskStore.save(task);
     }

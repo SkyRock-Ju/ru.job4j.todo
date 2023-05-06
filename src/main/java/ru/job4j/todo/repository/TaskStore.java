@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import ru.job4j.todo.model.Task;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -52,6 +53,8 @@ public class TaskStore implements TaskRepository {
         return Collections.emptyList();
     }
 
+
+
     @Override
     public List<Task> findDoneTasks() {
         var session = sessionFactory.openSession();
@@ -60,6 +63,25 @@ public class TaskStore implements TaskRepository {
             var doneTasks = session.createQuery("FROM Task WHERE done=true", Task.class).list();
             session.getTransaction().commit();
             return doneTasks;
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            session.getTransaction().rollback();
+        } finally {
+            session.close();
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<Task> findNewTasks() {
+        var session = sessionFactory.openSession();
+        try {
+            session.beginTransaction();
+            var newTasks = session.createQuery("FROM Task WHERE created> :date", Task.class)
+                            .setParameter("date", LocalDateTime.now().minusDays(1))
+                                    .list();
+            session.getTransaction().commit();
+            return newTasks;
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             session.getTransaction().rollback();

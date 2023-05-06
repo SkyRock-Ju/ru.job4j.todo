@@ -31,10 +31,7 @@ public class TaskController {
 
     @GetMapping("/new")
     public String getNewTasks(Model model) {
-        List<Task> doneTasks = taskService.findAll()
-                .stream()
-                .filter(t -> t.getCreated().isAfter(LocalDateTime.now().minusDays(1)))
-                .toList();
+        List<Task> doneTasks = taskService.findNewTasks();
         model.addAttribute("tasks", doneTasks);
         return "task/list";
     }
