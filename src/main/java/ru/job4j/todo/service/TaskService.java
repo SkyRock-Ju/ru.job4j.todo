@@ -34,7 +34,7 @@ public class TaskService {
     }
 
     public boolean completeTask(int id) {
-        return completeTask(id);
+        return taskStore.completeTask(id);
     }
 
     public boolean delete(int id) {
