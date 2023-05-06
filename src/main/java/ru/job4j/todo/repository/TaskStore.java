@@ -1,12 +1,11 @@
-package ru.job4j.todo.store;
+package ru.job4j.todo.repository;
 
 import lombok.AllArgsConstructor;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
-import ru.job4j.todo.model.User;
-import ru.job4j.todo.repository.UserRepository;
+import ru.job4j.todo.model.Task;
 
 import java.util.Collections;
 import java.util.List;
@@ -14,20 +13,19 @@ import java.util.Optional;
 
 @Repository
 @AllArgsConstructor
-public class UserStore implements UserRepository {
-
+public class TaskStore implements TaskRepository {
     private final SessionFactory sessionFactory;
     private static final Logger LOGGER = LoggerFactory.getLogger(TaskStore.class);
 
     @Override
-    public Optional<User> findById(int id) {
+    public Optional<Task> findById(int id) {
         var session = sessionFactory.openSession();
         try {
             session.beginTransaction();
-            var user = session.createQuery("FROM User WHERE id = :id", User.class)
+            var task = session.createQuery("FROM Task task WHERE task.id = :id", Task.class)
                     .setParameter("id", id).uniqueResultOptional();
             session.getTransaction().commit();
-            return user;
+            return task;
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             session.getTransaction().rollback();
@@ -38,13 +36,13 @@ public class UserStore implements UserRepository {
     }
 
     @Override
-    public List<User> findAll() {
+    public List<Task> findAll() {
         var session = sessionFactory.openSession();
         try {
             session.beginTransaction();
-            var users = session.createQuery("FROM User", User.class).list();
+            var tasks = session.createQuery("FROM Task", Task.class).list();
             session.getTransaction().commit();
-            return users;
+            return tasks;
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             session.getTransaction().rollback();
@@ -55,33 +53,69 @@ public class UserStore implements UserRepository {
     }
 
     @Override
-    public User save(User user) {
+    public List<Task> findDoneTasks() {
         var session = sessionFactory.openSession();
         try {
             session.beginTransaction();
-            session.persist(user);
+            var doneTasks = session.createQuery("FROM Task WHERE done=true", Task.class).list();
             session.getTransaction().commit();
-            return user;
+            return doneTasks;
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             session.getTransaction().rollback();
         } finally {
             session.close();
         }
-        return user;
+        return Collections.emptyList();
     }
 
     @Override
-    public boolean update(User user) {
+    public Task save(Task task) {
+        var session = sessionFactory.openSession();
+        try {
+            session.beginTransaction();
+            session.persist(task);
+            session.getTransaction().commit();
+            return task;
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            session.getTransaction().rollback();
+        } finally {
+            session.close();
+        }
+        return task;
+    }
+
+    @Override
+    public boolean update(Task task) {
         var session = sessionFactory.openSession();
         try {
             session.beginTransaction();
             session.createQuery(
-                            "UPDATE User SET name = :name, login = :login, password = :password WHERE id = :id")
-                    .setParameter("name", user.getName())
-                    .setParameter("login", user.getLogin())
-                    .setParameter("password", user.getPassword())
-                    .setParameter("id", user.getId())
+                            "UPDATE Task SET name = :name, description = :description, done= :isDone WHERE id = :id")
+                    .setParameter("description", task.getDescription())
+                    .setParameter("isDone", task.isDone())
+                    .setParameter("id", task.getId())
+                    .executeUpdate();
+            session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            session.getTransaction().rollback();
+        } finally {
+            session.close();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean completeTask(int id) {
+        var session = sessionFactory.openSession();
+        try {
+            session.beginTransaction();
+            session.createQuery(
+                            "UPDATE Task SET done=true WHERE id = :id")
+                    .setParameter("id", id)
                     .executeUpdate();
             session.getTransaction().commit();
             return true;
@@ -100,7 +134,7 @@ public class UserStore implements UserRepository {
         try {
             session.beginTransaction();
             session.createQuery(
-                            "DELETE FROM User WHERE id = :id")
+                            "DELETE FROM Task WHERE id = :id")
                     .setParameter("id", id)
                     .executeUpdate();
             session.getTransaction().commit();
