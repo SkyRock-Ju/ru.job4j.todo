@@ -27,15 +27,6 @@ User can switch task status as completed or update whole task information.
 ```sql
 create database todo
 ```
-- Create new table tasks
-```sql
-CREATE TABLE tasks (
-   id SERIAL PRIMARY KEY,
-   description TEXT,
-   created TIMESTAMP,
-   done BOOLEAN
-);
-```
 - Run the project
 ```
 mvn spring-boot:run
