@@ -15,11 +15,4 @@ public class TodoApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(TodoApplication.class, args);
 	}
-
-	@Bean(destroyMethod = "close")
-	public SessionFactory sf() {
-		final StandardServiceRegistry registry = new StandardServiceRegistryBuilder()
-				.configure().build();
-		return new MetadataSources(registry).buildMetadata().buildSessionFactory();
-	}
 }
