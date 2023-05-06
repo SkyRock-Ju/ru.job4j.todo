@@ -19,7 +19,6 @@ public class TaskStore implements TaskRepository {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TaskStore.class);
 
-
     @Override
     public Optional<Task> findById(int id) {
         var session = sessionFactory.openSession();
