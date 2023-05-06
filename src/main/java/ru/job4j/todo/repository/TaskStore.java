@@ -53,8 +53,6 @@ public class TaskStore implements TaskRepository {
         return Collections.emptyList();
     }
 
-
-
     @Override
     public List<Task> findDoneTasks() {
         var session = sessionFactory.openSession();
