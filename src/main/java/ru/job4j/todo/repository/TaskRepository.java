@@ -16,9 +16,9 @@ public interface TaskRepository {
 
     Task save(Task task);
 
-    boolean update(Task task);
+    void update(Task task);
 
-    boolean completeTask(int id);
+    void completeTask(int id);
 
-    boolean delete(int id);
+    void delete(int id);
 }

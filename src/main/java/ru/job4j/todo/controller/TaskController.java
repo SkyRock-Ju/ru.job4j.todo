@@ -49,19 +49,13 @@ public class TaskController {
 
     @GetMapping("/delete/{id}")
     public String deleteTask(Model model, @PathVariable int id) {
-        if (!taskService.delete(id)) {
-            model.addAttribute("message", "Не удалось удалить задачу");
-            return "404";
-        }
+        taskService.delete(id);
         return "redirect:/tasks";
     }
 
     @PostMapping("/complete/{id}")
     public String completeTask(Model model, @PathVariable int id) {
-        if (!taskService.completeTask(id)) {
-            model.addAttribute("message", "Не удалось выполнить задачу");
-            return "errors/404";
-        }
+        taskService.completeTask(id);
         return "redirect:/tasks";
     }
 
@@ -78,10 +72,7 @@ public class TaskController {
 
     @PostMapping("/update")
     public String update(Model model, @ModelAttribute Task task) {
-        if (!taskService.update(task)) {
-            model.addAttribute("message", "Не удалось отредактировать задачу");
-            return "errors/404";
-        }
+        taskService.update(task);
         return "redirect:/tasks";
     }
 

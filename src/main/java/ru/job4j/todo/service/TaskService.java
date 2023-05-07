@@ -33,15 +33,15 @@ public class TaskService {
         return taskStore.save(task);
     }
 
-    public boolean update(Task task) {
-        return taskStore.update(task);
+    public void update(Task task) {
+        taskStore.update(task);
     }
 
-    public boolean completeTask(int id) {
-        return taskStore.completeTask(id);
+    public void completeTask(int id) {
+        taskStore.completeTask(id);
     }
 
-    public boolean delete(int id) {
-        return taskStore.delete(id);
+    public void delete(int id) {
+        taskStore.delete(id);
     }
 }
