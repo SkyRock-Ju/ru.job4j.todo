@@ -6,11 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import ru.job4j.todo.model.User;
-import ru.job4j.todo.repository.TaskStore;
-import ru.job4j.todo.repository.UserRepository;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -18,15 +16,33 @@ import java.util.Optional;
 public class UserStore implements UserRepository {
 
     private final SessionFactory sessionFactory;
-    private static final Logger LOGGER = LoggerFactory.getLogger(TaskStore.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserStore.class);
 
     @Override
-    public Optional<User> findById(int id) {
+    public Optional<User> save(User user) {
         var session = sessionFactory.openSession();
         try {
             session.beginTransaction();
-            var user = session.createQuery("FROM User WHERE id = :id", User.class)
-                    .setParameter("id", id).uniqueResultOptional();
+            session.persist(user);
+            session.getTransaction().commit();
+            return Optional.of(user);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            session.getTransaction().rollback();
+        } finally {
+            session.close();
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<User> findByLoginAndPassword(String login, String password) {
+        var session = sessionFactory.openSession();
+        try {
+            session.beginTransaction();
+            var user = session.createQuery("FROM User WHERE login = :login AND password = :password", User.class)
+                    .setParameter("login", login)
+                    .setParameter("password", password).uniqueResultOptional();
             session.getTransaction().commit();
             return user;
         } catch (Exception e) {
@@ -39,7 +55,7 @@ public class UserStore implements UserRepository {
     }
 
     @Override
-    public List<User> findAll() {
+    public Collection<User> findAll() {
         var session = sessionFactory.openSession();
         try {
             session.beginTransaction();
@@ -56,47 +72,7 @@ public class UserStore implements UserRepository {
     }
 
     @Override
-    public User save(User user) {
-        var session = sessionFactory.openSession();
-        try {
-            session.beginTransaction();
-            session.persist(user);
-            session.getTransaction().commit();
-            return user;
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-            session.getTransaction().rollback();
-        } finally {
-            session.close();
-        }
-        return user;
-    }
-
-    @Override
-    public boolean update(User user) {
-        var session = sessionFactory.openSession();
-        try {
-            session.beginTransaction();
-            session.createQuery(
-                            "UPDATE User SET name = :name, login = :login, password = :password WHERE id = :id")
-                    .setParameter("name", user.getName())
-                    .setParameter("login", user.getLogin())
-                    .setParameter("password", user.getPassword())
-                    .setParameter("id", user.getId())
-                    .executeUpdate();
-            session.getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-            session.getTransaction().rollback();
-        } finally {
-            session.close();
-        }
-        return false;
-    }
-
-    @Override
-    public boolean delete(int id) {
+    public boolean deleteById(int id) {
         var session = sessionFactory.openSession();
         try {
             session.beginTransaction();
