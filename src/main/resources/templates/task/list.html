@@ -47,6 +47,7 @@
                     <th scope="col">#</th>
                     <th scope="col">Название задачи</th>
                     <th scope="col">Дата создания</th>
+                    <th scope="col">Исполнитель</th>
                     <th scope="col">Состояние</th>
                 </tr>
                 </thead>
@@ -55,6 +56,7 @@
                     <td th:text="${task.id}"/>
                     <td><a th:text="${task.name}" th:href="@{/tasks/{taskId}(taskId=${task.id})}"></a></td>
                     <td th:text="${task.created}"/>
+                    <td th:text="${task.user.name}"/>
                     <td>
                         <span th:if="${task.done}">
                             Выполнено
