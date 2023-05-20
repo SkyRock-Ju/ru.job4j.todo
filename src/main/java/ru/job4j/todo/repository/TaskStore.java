@@ -24,7 +24,7 @@ public class TaskStore implements TaskRepository {
 
     @Override
     public List<Task> findAll() {
-        return crudRepository.query("FROM Task", Task.class);
+        return crudRepository.query("FROM Task task JOIN FETCH task.priority", Task.class);
     }
 
     @Override
