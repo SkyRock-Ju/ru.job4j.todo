@@ -25,4 +25,8 @@ public class UserService {
     public Collection<User> findAll() {
         return userStore.findAll();
     }
+
+    public Optional<User> findById(int id) {
+        return userStore.findById(id);
+    }
 }

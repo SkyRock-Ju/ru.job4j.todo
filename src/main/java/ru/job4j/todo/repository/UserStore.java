@@ -22,7 +22,9 @@ public class UserStore implements UserRepository {
 
     @Override
     public Optional<User> findByLoginAndPassword(String login, String password) {
-        return crudRepository.optional("FROM User WHERE login = :login AND password = :password", User.class,
+        return crudRepository.optional(
+                "FROM User WHERE login = :login AND password = :password",
+                User.class,
                 Map.of("login", login, "password", password)
         );
     }
@@ -33,9 +35,20 @@ public class UserStore implements UserRepository {
     }
 
     @Override
+    public Optional<User> findById(int id) {
+        return crudRepository.optional(
+                "FROM User WHERE id = :id",
+                User.class,
+                Map.of("id", id)
+        );
+    }
+
+    @Override
     public void deleteById(int id) {
-        crudRepository.query("DELETE FROM User WHERE id = :id", User.class,
-                    Map.of("id", id)
-                );
+        crudRepository.query(
+                "DELETE FROM User WHERE id = :id",
+                User.class,
+                Map.of("id", id)
+        );
     }
 }

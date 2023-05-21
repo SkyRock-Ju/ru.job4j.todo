@@ -12,5 +12,7 @@ public interface UserRepository {
 
     Collection<User> findAll();
 
+    Optional<User> findById(int id);
+
     void deleteById(int id);
 }
