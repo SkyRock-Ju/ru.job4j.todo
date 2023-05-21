@@ -94,7 +94,7 @@ public class TaskController {
         task.setCreated(LocalDateTime.now());
         task.setPriority(priorityService.findById(task.getPriority().getId()).orElseThrow());
         task.setCategories(categoryService.findByIds(ids));
-        User user = (User)session.getAttribute("user");
+        User user = (User) session.getAttribute("user");
         task.setUser(user);
         taskService.update(task);
         return "redirect:/tasks";
