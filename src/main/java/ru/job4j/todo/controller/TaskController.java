@@ -91,12 +91,9 @@ public class TaskController {
 
     @PostMapping("/create")
     public String create(@ModelAttribute Task task, HttpSession session, @RequestParam("categories.ids") List<Integer> ids) {
-        task.setCreated(LocalDateTime.now());
-        task.setPriority(priorityService.findById(task.getPriority().getId()).orElseThrow());
-        task.setCategories(categoryService.findByIds(ids));
         User user = (User) session.getAttribute("user");
         task.setUser(user);
-        taskService.update(task);
+        taskService.save(task, ids);
         return "redirect:/tasks";
     }
 }

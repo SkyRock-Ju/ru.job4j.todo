@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.job4j.todo.model.Task;
 import ru.job4j.todo.repository.TaskStore;
 
-import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,6 +13,8 @@ import java.util.Optional;
 @AllArgsConstructor
 public class TaskService {
     private TaskStore taskStore;
+    private PriorityService priorityService;
+    private CategoryService categoryService;
 
     public Optional<Task> findById(int id) {
         return taskStore.findById(id);
@@ -30,8 +32,11 @@ public class TaskService {
         return taskStore.findNewTasks();
     }
 
-    public Task save(Task task) {
-        return taskStore.save(task);
+    public void save(Task task, List<Integer> ids) {
+        task.setCreated(LocalDateTime.now());
+        task.setPriority(priorityService.findById(task.getPriority().getId()).orElseThrow());
+        task.setCategories(categoryService.findByIds(ids));
+        taskStore.update(task);
     }
 
     public void update(Task task) {
