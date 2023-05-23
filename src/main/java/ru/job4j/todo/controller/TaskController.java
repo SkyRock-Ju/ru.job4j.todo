@@ -11,8 +11,9 @@ import ru.job4j.todo.service.PriorityService;
 import ru.job4j.todo.service.TaskService;
 
 import javax.servlet.http.HttpSession;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @AllArgsConstructor
@@ -24,8 +25,24 @@ public class TaskController {
     private final CategoryService categoryService;
 
     @GetMapping
-    public String getTasks(Model model) {
-        model.addAttribute("tasks", taskService.findAll());
+    public String getTasks(Model model, HttpSession session) {
+        var user = (User) session.getAttribute("user");
+        model.addAttribute(
+                "tasks",
+                taskService.findAll().stream().peek(task -> {
+                            LocalDateTime time = task.getCreated();
+                            task.setCreated(
+                                    ZonedDateTime.of(
+                                            time,
+                                            ZoneId.of("UTC")
+                                    ).withZoneSameInstant(
+                                            ZoneId.of(user.getTimezone())
+                                    ).toLocalDateTime()
+                            );
+
+                        }
+                ).collect(Collectors.toList())
+        );
         return "task/list";
     }
 
